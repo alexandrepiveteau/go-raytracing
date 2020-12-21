@@ -1,6 +1,9 @@
 package camera
 
-import "raytracing/pkg/geom"
+import (
+	"math"
+	"raytracing/pkg/geom"
+)
 
 type Camera struct {
 	Origin geom.Point
@@ -10,20 +13,28 @@ type Camera struct {
 	Vertical        geom.Vec
 }
 
-func NewCamera() Camera {
-	aspectRatio := 16.0 / 9.0
-	height := 2.0
+func NewCamera(
+	from, at geom.Vec,
+	up geom.Vec,
+	fov, aspectRatio float64,
+) Camera {
+	theta := fov * (math.Pi / 180)
+	h := math.Tan(theta / 2)
+	height := 2 * h
 	width := aspectRatio * height
-	focal := 1.0
+
+	w := from.Sub(at).Unit()
+	u := up.Cross(w).Unit()
+	v := w.Cross(u)
 
 	return Camera{
-		Origin:     geom.Point{},
-		Horizontal: geom.Vec{X: width},
-		Vertical:   geom.Vec{Y: height},
-		LowerLeftCorner: geom.Point{}.
-			Sub(geom.Vec{X: width}.Div(2)).
-			Sub(geom.Vec{Y: height}.Div(2)).
-			Sub(geom.Vec{Z: focal}),
+		Origin:     from,
+		Horizontal: u.Times(width),
+		Vertical:   v.Times(height),
+		LowerLeftCorner: from.
+			Sub(u.Times(width).Div(2)).
+			Sub(v.Times(height).Div(2)).
+			Sub(from.Sub(at).Unit()),
 	}
 }
 

@@ -81,7 +81,13 @@ func main() {
 	})
 
 	// Camera
-	cam := camera.NewCamera()
+	cam := camera.NewCamera(
+		geom.Vec{X: -2, Y: 2, Z: 1},
+		geom.Vec{Z: -1},
+		geom.Vec{Y: 1},
+		90,
+		aspectRatio,
+	)
 
 	// Rendering
 	fmt.Fprintf(f, "P3\n %d %d\n255\n", width, height)
