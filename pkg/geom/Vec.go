@@ -48,7 +48,7 @@ func (u Vec) Mul(v Vec) Vec {
 }
 
 func (u Vec) Dot(v Vec) float64 {
-	return u.X*v.X + u.Y*v.Y + u.Z*u.Z
+	return u.X*v.X + u.Y*v.Y + u.Z*v.Z
 }
 
 func (u Vec) Cross(v Vec) Vec {

@@ -3,26 +3,37 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"os"
 	"raytracing/pkg/color"
 	"raytracing/pkg/geom"
 )
 
-func hitSphere(center geom.Point, radius float64, ray geom.Ray) bool {
+func hitSphere(center geom.Point, radius float64, ray geom.Ray) float64 {
 	oc := ray.Origin.Sub(center)
 	a := ray.Direction.Dot(ray.Direction)
 	b := 2.0 * oc.Dot(ray.Direction)
 	c := oc.Dot(oc) - radius*radius
 	discriminant := b*b - 4*a*c
-	return discriminant > 0
+	if discriminant < 0 {
+		return -1
+	}
+	res := (-b - math.Sqrt(discriminant)) / (2 * a)
+	return res
 }
 
 func rayColor(ray geom.Ray) color.Color {
-	if hitSphere(geom.Point{Z: -1}, 0.5, ray) {
-		return color.Color{X: 1.0}
+	t := hitSphere(geom.Point{Z: -1}, 0.5, ray)
+	if t > 0 {
+		N := ray.At(t).Sub(geom.Point{Z: -1}).Unit()
+		return color.Color{
+			X: N.X + 1,
+			Y: N.Y + 1,
+			Z: N.Z + 1,
+		}.Times(0.5)
 	}
 	unit := ray.Direction.Unit()
-	t := 0.5 * (unit.Y + 1.0)
+	t = 0.5 * (unit.Y + 1.0)
 	from := color.Color{X: 1.0, Y: 1.0, Z: 1.0}
 	to := color.Color{X: 0.5, Y: 0.7, Z: 1.0}
 	return from.Times(1.0 - t).Add(to.Times(t))
@@ -53,6 +64,7 @@ func main() {
 	fmt.Fprintf(f, "P3\n %d %d\n255\n", width, height)
 
 	for j := height - 1; j >= 0; j-- {
+		fmt.Printf("%d lines remaining\n", j)
 		for i := 0; i < width; i++ {
 			u := float64(i) / float64(width-1)
 			v := float64(j) / float64(height-1)
