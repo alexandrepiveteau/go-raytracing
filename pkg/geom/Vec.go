@@ -6,6 +6,8 @@ type Vec struct {
 	X, Y, Z float64
 }
 
+type Point = Vec
+
 // UNARY
 
 func (u Vec) Inv() Vec {
