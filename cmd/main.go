@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"math/rand"
 	"os"
+	"raytracing/pkg/camera"
 	"raytracing/pkg/color"
 	"raytracing/pkg/geom"
 	"raytracing/pkg/hit"
@@ -30,24 +32,15 @@ func main() {
 	aspectRatio := 16.0 / 9.0
 	width := 1000
 	height := int(float64(width) / aspectRatio)
-
-	// Camera
-	viewportHeight := 2.0
-	viewportWidth := aspectRatio * viewportHeight
-	focalLength := 1.0
+	samples := 100
 
 	// World
 	world := hit.NewHittables()
 	world.Add(hit.Sphere{Center: geom.Point{Z: -1}, Radius: 0.5})
 	world.Add(hit.Sphere{Center: geom.Point{Y: -100.5, Z: -1}, Radius: 100})
 
-	origin := geom.Vec{}
-	horizontal := geom.Vec{X: viewportWidth}
-	vertical := geom.Vec{Y: viewportHeight}
-	lowerLeft := origin.
-		Sub(horizontal.Div(2)).
-		Sub(vertical.Div(2)).
-		Sub(geom.Vec{Z: focalLength})
+	// Camera
+	cam := camera.NewCamera()
 
 	// Rendering
 	fmt.Fprintf(f, "P3\n %d %d\n255\n", width, height)
@@ -55,17 +48,14 @@ func main() {
 	for j := height - 1; j >= 0; j-- {
 		fmt.Printf("%d lines remaining\n", j)
 		for i := 0; i < width; i++ {
-			u := float64(i) / float64(width-1)
-			v := float64(j) / float64(height-1)
-			ray := geom.Ray{
-				Origin: origin,
-				Direction: lowerLeft.
-					Add(horizontal.Times(u)).
-					Add(vertical.Times(v)).
-					Sub(origin),
+			c := color.Color{}
+			for s := 0; s < samples; s++ {
+				u := (float64(i) + rand.Float64()) / float64(width-1)
+				v := (float64(j) + rand.Float64()) / float64(height-1)
+				ray := cam.Ray(u, v)
+				c = c.Add(rayColor(ray, world))
 			}
-			c := rayColor(ray, world)
-			fmt.Fprintf(f, "%s\n", c.ToString())
+			fmt.Fprintf(f, "%s\n", c.ToString(uint64(samples)))
 		}
 	}
 

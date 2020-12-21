@@ -89,9 +89,27 @@ func (u Vec) Unit() Vec {
 
 // UTILS
 
-func (u Vec) ToString() string {
-	r := uint64(u.X * 255.999)
-	g := uint64(u.Y * 255.999)
-	b := uint64(u.Z * 255.999)
-	return fmt.Sprintf("%d %d %d", r, g, b)
+func (u Vec) ToString(samples uint64) string {
+	scale := 1.0 / float64(samples)
+
+	r := (u.X * scale)
+	g := (u.Y * scale)
+	b := (u.Z * scale)
+
+	clamp := func(v float64) float64{
+		if v <= 0 {
+			return 0
+		}
+		if v >= 1 {
+			return 0.999
+		}
+		return v
+	}
+
+	return fmt.Sprintf(
+		"%d %d %d",
+		uint64(256 * clamp(r)),
+		uint64(256 * clamp(g)),
+		uint64(256 * clamp(b)),
+	)
 }
