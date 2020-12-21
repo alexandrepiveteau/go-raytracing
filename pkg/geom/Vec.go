@@ -92,9 +92,9 @@ func (u Vec) Unit() Vec {
 func (u Vec) ToString(samples uint64) string {
 	scale := 1.0 / float64(samples)
 
-	r := u.X * scale
-	g := u.Y * scale
-	b := u.Z * scale
+	r := math.Sqrt(u.X * scale)
+	g := math.Sqrt(u.Y * scale)
+	b := math.Sqrt(u.Z * scale)
 
 	clamp := func(v float64) float64{
 		if v <= 0 {

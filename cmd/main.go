@@ -10,13 +10,22 @@ import (
 	"raytracing/pkg/color"
 	"raytracing/pkg/geom"
 	"raytracing/pkg/hit"
+	"raytracing/pkg/random"
 )
 
-func rayColor(ray geom.Ray, world hit.Hittable) color.Color {
+func rayColor(ray geom.Ray, world hit.Hittable, depth int) color.Color {
 	record := hit.Record{}
-	if world.Hit(ray, 0, math.MaxFloat64, &record) {
-		return (record.Normal.Add(color.Color{X: 1, Y: 1, Z: 1})).
-			Times(0.5)
+
+	if depth <= 0 {
+		return color.Color{}
+	}
+
+	if world.Hit(ray, 0.001, math.MaxFloat64, &record) {
+		target := record.P.Add(record.Normal).Add(random.RandomUnitSphere())
+		return rayColor(geom.Ray{
+			Origin:    record.P,
+			Direction: target.Sub(record.P),
+		}, world, depth - 1).Times(0.5)
 	}
 	unit := ray.Direction.Unit()
 	t := 0.5 * (unit.Y + 1.0)
@@ -30,9 +39,10 @@ func main() {
 
 	// Image
 	aspectRatio := 16.0 / 9.0
-	width := 1000
+	width := 500
 	height := int(float64(width) / aspectRatio)
 	samples := 100
+	depth := 50
 
 	// World
 	world := hit.NewHittables()
@@ -53,7 +63,7 @@ func main() {
 				u := (float64(i) + rand.Float64()) / float64(width-1)
 				v := (float64(j) + rand.Float64()) / float64(height-1)
 				ray := cam.Ray(u, v)
-				c = c.Add(rayColor(ray, world))
+				c = c.Add(rayColor(ray, world, depth))
 			}
 			fmt.Fprintf(f, "%s\n", c.ToString(uint64(samples)))
 		}
