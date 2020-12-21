@@ -1,6 +1,9 @@
 package geom
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type Vec struct {
 	X, Y, Z float64
@@ -78,4 +81,13 @@ func (u Vec) Length() float64 {
 
 func (u Vec) Unit() Vec {
 	return u.Div(u.Length())
+}
+
+// UTILS
+
+func (u Vec) ToString() string {
+	r := uint64(u.X * 255.999)
+	g := uint64(u.Y * 255.999)
+	b := uint64(u.Z * 255.999)
+	return fmt.Sprintf("%d %d %d", r, g, b)
 }
