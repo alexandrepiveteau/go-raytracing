@@ -6,8 +6,9 @@ import (
 )
 
 type Sphere struct {
-	Center geom.Point
-	Radius float64
+	Center   geom.Point
+	Radius   float64
+	Material Material
 }
 
 func (s Sphere) Hit(
@@ -39,6 +40,7 @@ func (s Sphere) Hit(
 	record.P = ray.At(record.T)
 	outward := (record.P.Sub(s.Center)).Div(s.Radius)
 	record.SetFaceNormal(ray, outward)
+	record.Material = &s.Material
 
 	return true
 }

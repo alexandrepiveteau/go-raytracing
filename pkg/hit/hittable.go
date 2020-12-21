@@ -5,6 +5,7 @@ import "raytracing/pkg/geom"
 type Record struct {
 	P         geom.Point
 	Normal    geom.Vec
+	Material  *Material
 	T         float64
 	FrontFace bool
 }

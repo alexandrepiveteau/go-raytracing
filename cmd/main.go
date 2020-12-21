@@ -10,7 +10,7 @@ import (
 	"raytracing/pkg/color"
 	"raytracing/pkg/geom"
 	"raytracing/pkg/hit"
-	"raytracing/pkg/random"
+	"raytracing/pkg/mat"
 )
 
 func rayColor(ray geom.Ray, world hit.Hittable, depth int) color.Color {
@@ -21,11 +21,12 @@ func rayColor(ray geom.Ray, world hit.Hittable, depth int) color.Color {
 	}
 
 	if world.Hit(ray, 0.001, math.MaxFloat64, &record) {
-		target := record.P.Add(record.Normal).Add(random.RandomUnitVector())
-		return rayColor(geom.Ray{
-			Origin:    record.P,
-			Direction: target.Sub(record.P),
-		}, world, depth - 1).Times(0.5)
+		scattered := geom.Ray{}
+		attenuation := color.Color{}
+		if (*record.Material).Scatter(ray, &record, &attenuation, &scattered) {
+			return rayColor(scattered, world, depth-1).Mul(attenuation)
+		}
+		return color.Color{}
 	}
 	unit := ray.Direction.Unit()
 	t := 0.5 * (unit.Y + 1.0)
@@ -39,15 +40,39 @@ func main() {
 
 	// Image
 	aspectRatio := 16.0 / 9.0
-	width := 500
+	width := 300
 	height := int(float64(width) / aspectRatio)
 	samples := 100
 	depth := 50
 
 	// World
 	world := hit.NewHittables()
-	world.Add(hit.Sphere{Center: geom.Point{Z: -1}, Radius: 0.5})
-	world.Add(hit.Sphere{Center: geom.Point{Y: -100.5, Z: -1}, Radius: 100})
+
+	materialGround := mat.Lambertian{X: 0.8, Y: 0.8}
+	materialCenter := mat.Lambertian{X: 0.7, Y: 0.3, Z: 0.3}
+	materialLeft := mat.Metal{X: 0.8, Y: 0.8, Z: 0.8}
+	materialRight := mat.Metal{X: 0.8, Y: 0.6, Z: 0.2}
+
+	world.Add(hit.Sphere{
+		Center:   geom.Point{Y: -100.5, Z: -1},
+		Radius:   100,
+		Material: materialGround,
+	})
+	world.Add(hit.Sphere{
+		Center:   geom.Point{Z: -1},
+		Radius:   0.5,
+		Material: materialCenter,
+	})
+	world.Add(hit.Sphere{
+		Center:   geom.Point{X: -1, Z: -1},
+		Radius:   0.5,
+		Material: materialLeft,
+	})
+	world.Add(hit.Sphere{
+		Center:   geom.Point{X: 1, Z: -1},
+		Radius:   0.5,
+		Material: materialRight,
+	})
 
 	// Camera
 	cam := camera.NewCamera()

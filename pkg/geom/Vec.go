@@ -75,6 +75,12 @@ func (u Vec) Div(scalar float64) Vec {
 
 // NORMS
 
+func (u Vec) Zero() bool {
+	// TODO : Fix approximate rounding.
+	delta := 0.0000001
+	return u.X < delta && u.Y < 0 && u.Z < 0
+}
+
 func (u Vec) Length() float64 {
 	return math.Sqrt(u.LengthSquared())
 }
@@ -96,7 +102,7 @@ func (u Vec) ToString(samples uint64) string {
 	g := math.Sqrt(u.Y * scale)
 	b := math.Sqrt(u.Z * scale)
 
-	clamp := func(v float64) float64{
+	clamp := func(v float64) float64 {
 		if v <= 0 {
 			return 0
 		}
@@ -108,8 +114,8 @@ func (u Vec) ToString(samples uint64) string {
 
 	return fmt.Sprintf(
 		"%d %d %d",
-		uint64(256 * clamp(r)),
-		uint64(256 * clamp(g)),
-		uint64(256 * clamp(b)),
+		uint64(256*clamp(r)),
+		uint64(256*clamp(g)),
+		uint64(256*clamp(b)),
 	)
 }
