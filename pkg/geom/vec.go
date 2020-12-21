@@ -6,7 +6,7 @@ import (
 )
 
 type Vec struct {
-	X, Y, Z float64
+	X1, X2, X3 float64
 }
 
 type Point = Vec
@@ -15,9 +15,9 @@ type Point = Vec
 
 func (u Vec) Inv() Vec {
 	return Vec{
-		X: -u.X,
-		Y: -u.Y,
-		Z: -u.Z,
+		X1: -u.X1,
+		X2: -u.X2,
+		X3: -u.X3,
 	}
 }
 
@@ -25,37 +25,37 @@ func (u Vec) Inv() Vec {
 
 func (u Vec) Add(v Vec) Vec {
 	return Vec{
-		X: u.X + v.X,
-		Y: u.Y + v.Y,
-		Z: u.Z + v.Z,
+		X1: u.X1 + v.X1,
+		X2: u.X2 + v.X2,
+		X3: u.X3 + v.X3,
 	}
 }
 
 func (u Vec) Sub(v Vec) Vec {
 	return Vec{
-		X: u.X - v.X,
-		Y: u.Y - v.Y,
-		Z: u.Z - v.Z,
+		X1: u.X1 - v.X1,
+		X2: u.X2 - v.X2,
+		X3: u.X3 - v.X3,
 	}
 }
 
 func (u Vec) Mul(v Vec) Vec {
 	return Vec{
-		X: u.X * v.X,
-		Y: u.Y * v.Y,
-		Z: u.Z * v.Z,
+		X1: u.X1 * v.X1,
+		X2: u.X2 * v.X2,
+		X3: u.X3 * v.X3,
 	}
 }
 
 func (u Vec) Dot(v Vec) float64 {
-	return u.X*v.X + u.Y*v.Y + u.Z*v.Z
+	return u.X1*v.X1 + u.X2*v.X2 + u.X3*v.X3
 }
 
 func (u Vec) Cross(v Vec) Vec {
 	return Vec{
-		X: u.Y*v.Z - u.Z*v.Y,
-		Y: u.Z*v.X - u.X*v.Z,
-		Z: u.X*v.Y - u.Y*v.X,
+		X1: u.X2*v.X3 - u.X3*v.X2,
+		X2: u.X3*v.X1 - u.X1*v.X3,
+		X3: u.X1*v.X2 - u.X2*v.X1,
 	}
 }
 
@@ -63,9 +63,9 @@ func (u Vec) Cross(v Vec) Vec {
 
 func (u Vec) Times(scalar float64) Vec {
 	return Vec{
-		X: u.X * scalar,
-		Y: u.Y * scalar,
-		Z: u.Z * scalar,
+		X1: u.X1 * scalar,
+		X2: u.X2 * scalar,
+		X3: u.X3 * scalar,
 	}
 }
 
@@ -78,7 +78,7 @@ func (u Vec) Div(scalar float64) Vec {
 func (u Vec) Zero() bool {
 	// TODO : Fix approximate rounding.
 	delta := 0.0000001
-	return u.X < delta && u.Y < 0 && u.Z < 0
+	return u.X1 < delta && u.X2 < 0 && u.X3 < 0
 }
 
 func (u Vec) Length() float64 {
@@ -86,10 +86,10 @@ func (u Vec) Length() float64 {
 }
 
 func (u Vec) LengthSquared() float64 {
-	return u.X*u.X + u.Y*u.Y + u.Z*u.Z
+	return u.X1*u.X1 + u.X2*u.X2 + u.X3*u.X3
 }
 
-func (u Vec) Unit() Vec {
+func (u Vec) Normalize() Vec {
 	return u.Div(u.Length())
 }
 
@@ -98,9 +98,9 @@ func (u Vec) Unit() Vec {
 func (u Vec) ToString(samples uint64) string {
 	scale := 1.0 / float64(samples)
 
-	r := math.Sqrt(u.X * scale)
-	g := math.Sqrt(u.Y * scale)
-	b := math.Sqrt(u.Z * scale)
+	r := math.Sqrt(u.X1 * scale)
+	g := math.Sqrt(u.X2 * scale)
+	b := math.Sqrt(u.X3 * scale)
 
 	clamp := func(v float64) float64 {
 		if v <= 0 {

@@ -23,6 +23,6 @@ func (l Lambertian) Scatter(
 	}
 
 	*scattered = geom.Ray{Origin: record.P, Direction: direction}
-	*attenuation = color.Color{X: l.X, Y: l.Y, Z: l.Z}
+	*attenuation = color.Color{X1: l.X1, X2: l.X2, X3: l.X3}
 	return true
 }

@@ -12,9 +12,9 @@ func random(from float64, until float64) float64 {
 
 func randomVector(from, until float64) geom.Vec {
 	return geom.Vec{
-		X: random(from, until),
-		Y: random(from, until),
-		Z: random(from, until),
+		X1: random(from, until),
+		X2: random(from, until),
+		X3: random(from, until),
 	}
 }
 
@@ -28,5 +28,5 @@ func RandomUnitSphere() geom.Vec {
 }
 
 func RandomUnitVector() geom.Vec  {
-	return RandomUnitSphere().Unit()
+	return RandomUnitSphere().Normalize()
 }

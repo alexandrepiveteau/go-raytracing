@@ -28,10 +28,10 @@ func rayColor(ray geom.Ray, world hit.Hittable, depth int) color.Color {
 		}
 		return color.Color{}
 	}
-	unit := ray.Direction.Unit()
-	t := 0.5 * (unit.Y + 1.0)
-	from := color.Color{X: 1.0, Y: 1.0, Z: 1.0}
-	to := color.Color{X: 0.5, Y: 0.7, Z: 1.0}
+	unit := ray.Direction.Normalize()
+	t := 0.5 * (unit.X2 + 1.0)
+	from := color.Color{X1: 1.0, X2: 1.0, X3: 1.0}
+	to := color.Color{X1: 0.5, X2: 0.7, X3: 1.0}
 	return from.Times(1.0 - t).Add(to.Times(t))
 }
 
@@ -48,43 +48,43 @@ func main() {
 	// World
 	world := hit.NewHittables()
 
-	materialGround := mat.Lambertian{X: 0.8, Y: 0.8}
-	materialCenter := mat.Lambertian{X: 0.7, Y: 0.3, Z: 0.3}
+	materialGround := mat.Lambertian{X1: 0.8, X2: 0.8}
+	materialCenter := mat.Lambertian{X1: 0.7, X2: 0.3, X3: 0.3}
 	materialLeft := mat.Metal{
-		Color: color.Color{X: 0.8, Y: 0.8, Z: 0.8},
+		Color: color.Color{X1: 0.8, X2: 0.8, X3: 0.8},
 		Fuzz:  0.3,
 	}
 	materialRight := mat.Metal{
-		Color: color.Color{X: 0.8, Y: 0.6, Z: 0.2},
+		Color: color.Color{X1: 0.8, X2: 0.6, X3: 0.2},
 		Fuzz:  1,
 	}
 
 	world.Add(hit.Sphere{
-		Center:   geom.Point{Y: -100.5, Z: -1},
+		Center:   geom.Point{X2: -100.5, X3: -1},
 		Radius:   100,
 		Material: materialGround,
 	})
 	world.Add(hit.Sphere{
-		Center:   geom.Point{Z: -1},
+		Center:   geom.Point{X3: -1},
 		Radius:   0.5,
 		Material: materialCenter,
 	})
 	world.Add(hit.Sphere{
-		Center:   geom.Point{X: -1, Z: -1},
+		Center:   geom.Point{X1: -1, X3: -1},
 		Radius:   0.5,
 		Material: materialLeft,
 	})
 	world.Add(hit.Sphere{
-		Center:   geom.Point{X: 1, Z: -1},
+		Center:   geom.Point{X1: 1, X3: -1},
 		Radius:   0.5,
 		Material: materialRight,
 	})
 
 	// Camera
 	cam := camera.NewCamera(
-		geom.Vec{X: -2, Y: 2, Z: 1},
-		geom.Vec{Z: -1},
-		geom.Vec{Y: 1},
+		geom.Vec{X1: -2, X2: 2, X3: 1},
+		geom.Vec{X3: -1},
+		geom.Vec{X2: 1},
 		90,
 		aspectRatio,
 	)

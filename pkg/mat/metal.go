@@ -22,11 +22,11 @@ func (m Metal) Scatter(
 	attenuation *color.Color,
 	scattered *geom.Ray,
 ) bool {
-	reflected := reflect(ray.Direction.Unit(), record.Normal)
+	reflected := reflect(ray.Direction.Normalize(), record.Normal)
 	*scattered = geom.Ray{
 		Origin:    record.P,
 		Direction: reflected.Add(random.RandomUnitSphere().Times(m.Fuzz)),
 	}
-	*attenuation = color.Color{X: m.Color.X, Y: m.Color.Y, Z: m.Color.Y}
+	*attenuation = color.Color{X1: m.Color.X1, X2: m.Color.X2, X3: m.Color.X2}
 	return true
 }

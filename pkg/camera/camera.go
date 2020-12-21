@@ -23,8 +23,8 @@ func NewCamera(
 	height := 2 * h
 	width := aspectRatio * height
 
-	w := from.Sub(at).Unit()
-	u := up.Cross(w).Unit()
+	w := from.Sub(at).Normalize()
+	u := up.Cross(w).Normalize()
 	v := w.Cross(u)
 
 	return Camera{
@@ -34,7 +34,7 @@ func NewCamera(
 		LowerLeftCorner: from.
 			Sub(u.Times(width).Div(2)).
 			Sub(v.Times(height).Div(2)).
-			Sub(from.Sub(at).Unit()),
+			Sub(from.Sub(at).Normalize()),
 	}
 }
 
