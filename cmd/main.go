@@ -50,8 +50,14 @@ func main() {
 
 	materialGround := mat.Lambertian{X: 0.8, Y: 0.8}
 	materialCenter := mat.Lambertian{X: 0.7, Y: 0.3, Z: 0.3}
-	materialLeft := mat.Metal{X: 0.8, Y: 0.8, Z: 0.8}
-	materialRight := mat.Metal{X: 0.8, Y: 0.6, Z: 0.2}
+	materialLeft := mat.Metal{
+		Color: color.Color{X: 0.8, Y: 0.8, Z: 0.8},
+		Fuzz:  0.3,
+	}
+	materialRight := mat.Metal{
+		Color: color.Color{X: 0.8, Y: 0.6, Z: 0.2},
+		Fuzz:  1,
+	}
 
 	world.Add(hit.Sphere{
 		Center:   geom.Point{Y: -100.5, Z: -1},
