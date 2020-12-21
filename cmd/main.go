@@ -11,14 +11,14 @@ import (
 
 func hitSphere(center geom.Point, radius float64, ray geom.Ray) float64 {
 	oc := ray.Origin.Sub(center)
-	a := ray.Direction.Dot(ray.Direction)
-	b := 2.0 * oc.Dot(ray.Direction)
-	c := oc.Dot(oc) - radius*radius
-	discriminant := b*b - 4*a*c
+	a := ray.Direction.LengthSquared()
+	halfB := oc.Dot(ray.Direction)
+	c := oc.LengthSquared() - radius*radius
+	discriminant := halfB*halfB - a*c
 	if discriminant < 0 {
 		return -1
 	}
-	res := (-b - math.Sqrt(discriminant)) / (2 * a)
+	res := (-halfB - math.Sqrt(discriminant)) / a
 	return res
 }
 

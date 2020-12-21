@@ -76,7 +76,11 @@ func (u Vec) Div(scalar float64) Vec {
 // NORMS
 
 func (u Vec) Length() float64 {
-	return math.Sqrt(u.X*u.X + u.Y*u.Y + u.Z*u.Z)
+	return math.Sqrt(u.LengthSquared())
+}
+
+func (u Vec) LengthSquared() float64 {
+	return u.X*u.X + u.Y*u.Y + u.Z*u.Z
 }
 
 func (u Vec) Unit() Vec {
