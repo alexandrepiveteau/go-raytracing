@@ -8,7 +8,19 @@ import (
 	"raytracing/pkg/geom"
 )
 
+func hitSphere(center geom.Point, radius float64, ray geom.Ray) bool {
+	oc := ray.Origin.Sub(center)
+	a := ray.Direction.Dot(ray.Direction)
+	b := 2.0 * oc.Dot(ray.Direction)
+	c := oc.Dot(oc) - radius*radius
+	discriminant := b*b - 4*a*c
+	return discriminant > 0
+}
+
 func rayColor(ray geom.Ray) color.Color {
+	if hitSphere(geom.Point{Z: -1}, 0.5, ray) {
+		return color.Color{X: 1.0}
+	}
 	unit := ray.Direction.Unit()
 	t := 0.5 * (unit.Y + 1.0)
 	from := color.Color{X: 1.0, Y: 1.0, Z: 1.0}
