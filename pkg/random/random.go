@@ -26,3 +26,7 @@ func RandomUnitSphere() geom.Vec {
 		}
 	}
 }
+
+func RandomUnitVector() geom.Vec  {
+	return RandomUnitSphere().Unit()
+}

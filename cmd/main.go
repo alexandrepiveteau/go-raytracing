@@ -21,7 +21,7 @@ func rayColor(ray geom.Ray, world hit.Hittable, depth int) color.Color {
 	}
 
 	if world.Hit(ray, 0.001, math.MaxFloat64, &record) {
-		target := record.P.Add(record.Normal).Add(random.RandomUnitSphere())
+		target := record.P.Add(record.Normal).Add(random.RandomUnitVector())
 		return rayColor(geom.Ray{
 			Origin:    record.P,
 			Direction: target.Sub(record.P),
