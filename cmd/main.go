@@ -7,33 +7,17 @@ import (
 	"os"
 	"raytracing/pkg/color"
 	"raytracing/pkg/geom"
+	"raytracing/pkg/hit"
 )
 
-func hitSphere(center geom.Point, radius float64, ray geom.Ray) float64 {
-	oc := ray.Origin.Sub(center)
-	a := ray.Direction.LengthSquared()
-	halfB := oc.Dot(ray.Direction)
-	c := oc.LengthSquared() - radius*radius
-	discriminant := halfB*halfB - a*c
-	if discriminant < 0 {
-		return -1
-	}
-	res := (-halfB - math.Sqrt(discriminant)) / a
-	return res
-}
-
-func rayColor(ray geom.Ray) color.Color {
-	t := hitSphere(geom.Point{Z: -1}, 0.5, ray)
-	if t > 0 {
-		N := ray.At(t).Sub(geom.Point{Z: -1}).Unit()
-		return color.Color{
-			X: N.X + 1,
-			Y: N.Y + 1,
-			Z: N.Z + 1,
-		}.Times(0.5)
+func rayColor(ray geom.Ray, world hit.Hittable) color.Color {
+	record := hit.Record{}
+	if world.Hit(ray, 0, math.MaxFloat64, &record) {
+		return (record.Normal.Add(color.Color{X: 1, Y: 1, Z: 1})).
+			Times(0.5)
 	}
 	unit := ray.Direction.Unit()
-	t = 0.5 * (unit.Y + 1.0)
+	t := 0.5 * (unit.Y + 1.0)
 	from := color.Color{X: 1.0, Y: 1.0, Z: 1.0}
 	to := color.Color{X: 0.5, Y: 0.7, Z: 1.0}
 	return from.Times(1.0 - t).Add(to.Times(t))
@@ -51,6 +35,11 @@ func main() {
 	viewportHeight := 2.0
 	viewportWidth := aspectRatio * viewportHeight
 	focalLength := 1.0
+
+	// World
+	world := hit.NewHittables()
+	world.Add(hit.Sphere{Center: geom.Point{Z: -1}, Radius: 0.5})
+	world.Add(hit.Sphere{Center: geom.Point{Y: -100.5, Z: -1}, Radius: 100})
 
 	origin := geom.Vec{}
 	horizontal := geom.Vec{X: viewportWidth}
@@ -75,7 +64,7 @@ func main() {
 					Add(vertical.Times(v)).
 					Sub(origin),
 			}
-			c := rayColor(ray)
+			c := rayColor(ray, world)
 			fmt.Fprintf(f, "%s\n", c.ToString())
 		}
 	}
